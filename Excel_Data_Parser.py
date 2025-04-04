@@ -81,6 +81,30 @@ tk.Label(top, text="Raw Data:").pack(anchor='w')
 text_area = scrolledtext.ScrolledText(top, width=70, height=15) 
 text_area.pack(side='top',fill='both',expand=True)
 
+
+# Enable Ctrl + C, V, X (Copy-Paste)
+def enable_copy_paste(event):
+    if event.state & 0x4 and event.keysym == "v":  # Ctrl + V
+        text_area.event_generate("<<Paste>>")
+    elif event.state & 0x4 and event.keysym == "c":  # Ctrl + C
+        text_area.event_generate("<<Copy>>")
+    elif event.state & 0x4 and event.keysym == "x":  # Ctrl + X
+        text_area.event_generate("<<Cut>>")
+
+text_area.bind("<KeyPress>", enable_copy_paste)
+
+# Right-Click Menu for Copy-Paste
+def right_click_menu(event):
+    menu = tk.Menu(top, tearoff=0)
+    menu.add_command(label="Cut", command=lambda: text_area.event_generate("<<Cut>>"))
+    menu.add_command(label="Copy", command=lambda: text_area.event_generate("<<Copy>>"))
+    menu.add_command(label="Paste", command=lambda: text_area.event_generate("<<Paste>>"))
+    menu.post(event.x_root, event.y_root)
+
+text_area.bind("<Button-3>", right_click_menu)  # Windows Right-Click
+text_area.bind("<Button-2>", right_click_menu)  # Mac Two-Finger Tap
+
+
 frame = tk.Frame(top)
 frame.pack(pady=5,padx=10) 
 
